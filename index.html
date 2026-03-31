@@ -101,7 +101,7 @@
 
         #status {
             position: fixed;
-            bottom: 20px;
+            bottom: 60px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.7);
@@ -109,6 +109,8 @@
             border-radius: 20px;
             font-size: 14px;
             z-index: 50;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Hidden canvas for processing */
@@ -116,31 +118,64 @@
             display: none;
         }
 
-        #privacy-notice {
-            position: fixed;
-            bottom: 10px;
-            right: 15px;
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.5);
-            z-index: 60;
-            text-align: right;
-            font-family: inherit;
-            line-height: 1.4;
-            pointer-events: none;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 5px 10px;
-            border-radius: 8px;
-            backdrop-filter: blur(4px);
+        /* Hidden canvas for processing */
+        #hidden-canvas {
+            display: none;
         }
 
-        #privacy-notice a {
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 11px;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+            font-family: inherit;
+            letter-spacing: 0.3px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-divider {
+            width: 1px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        footer a {
             color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
-            pointer-events: auto;
+            transition: color 0.2s;
         }
 
-        #privacy-notice a:hover {
-            text-decoration: underline;
+        footer a:hover {
+            color: #00FF00;
+            text-decoration: none;
+        }
+
+        .badge-img {
+            height: 16px;
+            vertical-align: middle;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .badge-img:hover {
+            opacity: 1;
         }
     </style>
 </head>
@@ -156,10 +191,31 @@
 
     <div id="status">Waiting for a launch...</div>
 
-    <div id="privacy-notice">
-        <b>Privacy:</b> Video processed locally. No tracking or cookies used.<br>
-        Licensed under <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache 2.0</a>
-    </div>
+    <footer>
+        <div class="footer-item">
+            <span style="color: rgba(255,255,255,0.7)">🔒 Privacy:</span>
+            Processing is 100% local. No tracking or cookies.
+        </div>
+
+        <div class="footer-divider"></div>
+
+        <div class="footer-item">
+            <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache 2.0 License</a>
+        </div>
+
+        <div class="footer-divider"></div>
+
+        <div class="footer-item">
+            <span>Copyright© Vitalii • Unchair 2026</span>
+        </div>
+
+        <div class="footer-divider"></div>
+
+        <div class="footer-item">
+            <img src="https://api.visitorbadge.io/api/VisitorHit?user=chairy&repo=mairy&countColor=%237B1E7A"
+                alt="Visitors" class="badge-img">
+        </div>
+    </footer>
 
     <div id="video-container">
         <video id="input-video" playsinline></video>
