@@ -98,6 +98,33 @@
         #hidden-canvas {
             display: none;
         }
+
+        #privacy-notice {
+            position: fixed;
+            bottom: 10px;
+            right: 15px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            z-index: 60;
+            text-align: right;
+            font-family: inherit;
+            line-height: 1.4;
+            pointer-events: none;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 8px;
+            backdrop-filter: blur(4px);
+        }
+
+        #privacy-notice a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            pointer-events: auto;
+        }
+
+        #privacy-notice a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -110,6 +137,11 @@
     </div>
 
     <div id="status">Waiting for a launch...</div>
+
+    <div id="privacy-notice">
+        <b>Privacy:</b> Video processed locally. No data stored.<br>
+        Licensed under <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache 2.0</a>
+    </div>
 
     <div id="video-container">
         <video id="input-video" playsinline></video>
