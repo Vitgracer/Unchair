@@ -35,23 +35,104 @@ function drawPoint(ctx, p, color = '#FF0000', radius = 6) {
     ctx.fill();
 }
 
+/**
+ * Draws a futuristic play area border
+ */
+function drawPlayArea(ctx, x, y, size, color = '#00f2ff') {
+    ctx.save();
+    
+    // Subtle outer glow
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = color;
+    
+    // Draw corners
+    const cornerLen = 40;
+    const thickness = 4;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = thickness;
+    ctx.lineCap = 'round';
+
+    // Top Left
+    ctx.beginPath();
+    ctx.moveTo(x, y + cornerLen);
+    ctx.lineTo(x, y);
+    ctx.lineTo(x + cornerLen, y);
+    ctx.stroke();
+
+    // Top Right
+    ctx.beginPath();
+    ctx.moveTo(x + size - cornerLen, y);
+    ctx.lineTo(x + size, y);
+    ctx.lineTo(x + size, y + cornerLen);
+    ctx.stroke();
+
+    // Bottom Right
+    ctx.beginPath();
+    ctx.moveTo(x + size, y + size - cornerLen);
+    ctx.lineTo(x + size, y + size);
+    ctx.lineTo(x + size - cornerLen, y + size);
+    ctx.stroke();
+
+    // Bottom Left
+    ctx.beginPath();
+    ctx.moveTo(x + cornerLen, y + size);
+    ctx.lineTo(x, y + size);
+    ctx.lineTo(x, y + size - cornerLen);
+    ctx.stroke();
+
+    // Semi-transparent fill for the non-playable area
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    // Top
+    ctx.fillRect(0, 0, ctx.canvas.width, y); 
+    // Bottom
+    ctx.fillRect(0, y + size, ctx.canvas.width, ctx.canvas.height - (y + size)); 
+    // Left
+    ctx.fillRect(0, y, x, size); 
+    // Right
+    ctx.fillRect(x + size, y, ctx.canvas.width - (x + size), size); 
+
+    // Pulse effect for the play area label
+    const pulse = (Math.sin(Date.now() / 500) + 1) / 2;
+    ctx.font = 'bold 14px Outfit, sans-serif';
+    ctx.fillStyle = `rgba(0, 242, 255, ${0.3 + pulse * 0.7})`;
+    ctx.textAlign = 'center';
+    
+    // Un-mirror text (counteracting CSS flip)
+    ctx.save();
+    ctx.translate(x + size / 2, y + size - 10);
+    ctx.scale(-1, 1);
+    ctx.fillText('ACTIVE PLAY ZONE', 0, 0);
+    ctx.restore();
+
+    ctx.restore();
+}
+
 export function drawPose(ctx, results, video, canvas, gameplayManager = null) {
     ctx.save();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // 1. Draw Gameplay Elements (if active)
+    const vWidth = video.videoWidth;
+    const vHeight = video.videoHeight;
+    const minDim = Math.min(vWidth, vHeight);
+    const sx = (vWidth - minDim) / 2;
+    const sy = (vHeight - minDim) / 2;
+
     if (gameplayManager && gameplayManager.gameStarted) {
+        // Draw the play area boundary
+        drawPlayArea(ctx, sx, sy, minDim);
+
         gameplayManager.getBubbles().forEach(bubble => {
-            ctx.beginPath();
-            ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
-            
             if (bubble.isPopped) {
-                // Expanding bubble or particles
+                // Flash explosion
+                ctx.beginPath();
+                ctx.arc(bubble.x, bubble.y, bubble.radius * (1 + bubble.popTimer/5), 0, Math.PI * 2);
                 ctx.strokeStyle = bubble.color;
-                ctx.lineWidth = 2;
-                ctx.setLineDash([5, 5]);
+                ctx.lineWidth = 3 * (1 - bubble.popTimer/10);
                 ctx.stroke();
             } else {
+                ctx.beginPath();
+                ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
                 const gradient = ctx.createRadialGradient(
                     bubble.x - bubble.radius / 3, 
                     bubble.y - bubble.radius / 3, 
@@ -65,6 +146,12 @@ export function drawPose(ctx, results, video, canvas, gameplayManager = null) {
                 gradient.addColorStop(1, 'rgba(0,0,0,0)');
                 
                 ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // Add a little highlight
+                ctx.beginPath();
+                ctx.arc(bubble.x - bubble.radius/3, bubble.y - bubble.radius/3, bubble.radius/4, 0, Math.PI*2);
+                ctx.fillStyle = 'rgba(255,255,255,0.4)';
                 ctx.fill();
             }
         });

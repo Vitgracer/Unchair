@@ -77,7 +77,9 @@ function onPoseResults(results) {
 
         const playArea = {
             minX: sx,
-            maxX: sx + minDim
+            maxX: sx + minDim,
+            minY: sy,
+            size: minDim
         };
 
         game.update(canvas.width, canvas.height, handPoints, playArea);
@@ -125,9 +127,9 @@ async function start() {
         await runCountdown(countdownEl);
         
         // Start Game
+        hideElement(statusEl); // Hide status during gameplay
         showElement(scoreContainerEl);
         game.start();
-        setStatus(statusEl, 'Enjoy! :)');
 
         loop();
     } catch (err) {

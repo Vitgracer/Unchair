@@ -3,10 +3,10 @@
  */
 
 class Bubble {
-    constructor(minX, maxX) {
+    constructor(minX, maxX, minY) {
         this.radius = Math.random() * 20 + 20; // 20-40px
         this.x = Math.random() * (maxX - minX - this.radius * 2) + minX + this.radius;
-        this.y = -this.radius;
+        this.y = (minY !== undefined) ? minY - this.radius : -this.radius;
         this.speed = Math.random() * 2 + 1; // 1-3 px/frame
         this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
         this.isPopped = false;
@@ -59,7 +59,7 @@ export class GameplayManager {
 
         const now = performance.now();
         if (now - this.lastSpawnTime > this.spawnInterval) {
-            this.bubbles.push(new Bubble(this.playArea.minX, this.playArea.maxX));
+            this.bubbles.push(new Bubble(this.playArea.minX, this.playArea.maxX, this.playArea.minY));
             this.lastSpawnTime = now;
         }
 
@@ -75,8 +75,12 @@ export class GameplayManager {
         });
 
         // Remove bubbles that are off-screen or popped
+        const maxY = (this.playArea.minY !== undefined && this.playArea.size !== undefined) 
+            ? this.playArea.minY + this.playArea.size 
+            : canvasHeight;
+
         this.bubbles = this.bubbles.filter(bubble => 
-            bubble.y < canvasHeight + bubble.radius && 
+            bubble.y < maxY + bubble.radius && 
             (!bubble.isPopped || bubble.popTimer < 10)
         );
     }
