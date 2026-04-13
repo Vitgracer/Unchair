@@ -7,17 +7,18 @@ class Bubble {
         this.radius = Math.random() * 20 + 20; // 20-40px
         this.x = Math.random() * (maxX - minX - this.radius * 2) + minX + this.radius;
         this.y = (minY !== undefined) ? minY - this.radius : -this.radius;
-        this.speed = Math.random() * 2 + 1; // 1-3 px/frame
+        // Speed is now in Pixels Per Second (approx 120-240px/sec)
+        this.speed = Math.random() * 120 + 60; 
         this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
         this.isPopped = false;
         this.popTimer = 0;
     }
 
-    update() {
+    update(dt) {
         if (!this.isPopped) {
-            this.y += this.speed;
+            this.y += this.speed * dt;
         } else {
-            this.popTimer++;
+            this.popTimer += dt * 60; // Keep pop timer roughly frame-based for logic
         }
     }
 
@@ -50,8 +51,8 @@ export class GameplayManager {
         this.score = 0;
     }
 
-    update(canvasWidth, canvasHeight, handPoints, playArea = null) {
-        if (!this.gameStarted) return;
+    update(canvasWidth, canvasHeight, handPoints, playArea = null, dt) {
+        if (!this.gameStarted || !dt) return;
         
         if (playArea) {
             this.playArea = playArea;
@@ -64,7 +65,7 @@ export class GameplayManager {
         }
 
         this.bubbles.forEach(bubble => {
-            bubble.update();
+            bubble.update(dt);
             
             // Check collision with each hand point
             handPoints.forEach(point => {

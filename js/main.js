@@ -21,6 +21,8 @@ const game = new GameplayManager();
 let pose;
 let isStarted = false;
 let currentPoseResults = null;
+let handPoints = [];
+let currentPlayArea = null;
 
 // FPS tracking
 let renderFrameCount = 0;
@@ -28,6 +30,7 @@ let lastRenderFpsUpdate = 0;
 let lastPoseTime = 0;
 let poseFrameCount = 0;
 let lastPoseFpsUpdate = 0;
+let lastFrameTime = 0;
 
 function onPoseResults(results) {
     currentPoseResults = results;
@@ -43,47 +46,47 @@ function onPoseResults(results) {
     lastPoseTime = now;
 
     // Handle gameplay updates
-    if (game.gameStarted && results.poseLandmarks) {
-        // Prepare hand points for collision
-        const lms = results.poseLandmarks;
+    if (game.gameStarted) {
         const vWidth = video.videoWidth;
         const vHeight = video.videoHeight;
         const minDim = Math.min(vWidth, vHeight);
         const sx = (vWidth - minDim) / 2;
         const sy = (vHeight - minDim) / 2;
 
-        const mapLM = (lm) => ({
-            x: (lm.x * minDim + sx) / vWidth * canvas.width,
-            y: (lm.y * minDim + sy) / vHeight * canvas.height
-        });
-
-        // Simplified hand center calculation (same as renderer)
-        const getHandCenter = (indices) => {
-            let x = 0, y = 0, count = 0;
-            indices.forEach(idx => {
-                if (lms[idx]) {
-                    x += lms[idx].x;
-                    y += lms[idx].y;
-                    count++;
-                }
-            });
-            return count > 0 ? mapLM({ x: x / count, y: y / count }) : null;
-        };
-
-        const handPoints = [
-            getHandCenter([15, 17, 19, 21]), // Left
-            getHandCenter([16, 18, 20, 22])  // Right
-        ].filter(p => p !== null);
-
-        const playArea = {
+        currentPlayArea = {
             minX: sx,
             maxX: sx + minDim,
             minY: sy,
             size: minDim
         };
 
-        game.update(canvas.width, canvas.height, handPoints, playArea);
-        updateScore(scoreValEl, game.getScore());
+        if (results.poseLandmarks) {
+            const lms = results.poseLandmarks;
+            const mapLM = (lm) => ({
+                x: (lm.x * minDim + sx) / vWidth * canvas.width,
+                y: (lm.y * minDim + sy) / vHeight * canvas.height
+            });
+
+            const getHandCenter = (indices) => {
+                let x = 0, y = 0, count = 0;
+                indices.forEach(idx => {
+                    if (lms[idx]) {
+                        x += lms[idx].x;
+                        y += lms[idx].y;
+                        count++;
+                    }
+                });
+                return count > 0 ? mapLM({ x: x / count, y: y / count }) : null;
+            };
+
+            handPoints = [
+                getHandCenter([15, 17, 19, 21]), // Left
+                getHandCenter([16, 18, 20, 22])  // Right
+            ].filter(p => p !== null);
+        } else {
+            // Clear hands if person is not detected
+            handPoints = [];
+        }
     }
 }
 
@@ -100,8 +103,21 @@ function renderLoop(now) {
         renderFrameCount = updated.frameCount;
         lastRenderFpsUpdate = updated.lastUpdateTime;
 
+        // Calculate Delta Time (in seconds)
+        let deltaTime = lastFrameTime ? (now - lastFrameTime) / 1000 : 0;
+        if (deltaTime > 0.1) deltaTime = 0.1; // Cap to 10fps to prevent teleportation after pauses
+        lastFrameTime = now;
+
         // Draw everything
         drawPose(ctx, currentPoseResults || {}, video, canvas, game);
+        
+        // Update gameplay logic with delta time
+        if (game.gameStarted) {
+            game.update(canvas.width, canvas.height, handPoints, currentPlayArea, deltaTime);
+            updateScore(scoreValEl, game.getScore());
+        }
+    } else {
+        lastFrameTime = 0;
     }
     requestAnimationFrame(renderLoop);
 }
