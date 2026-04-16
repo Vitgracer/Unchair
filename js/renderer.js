@@ -203,31 +203,24 @@ export function drawPose(ctx, results, video, canvas, gameplayManager = null) {
         gameplayManager.getBubbles().forEach(bubble => {
             if (bubble.isPopped) {
                 ctx.beginPath();
-                ctx.arc(bubble.x, bubble.y, bubble.radius * (1 + bubble.popTimer/5), 0, Math.PI * 2);
+                ctx.arc(bubble.x, bubble.y, bubble.radius * (1 + bubble.popTimer/10), 0, Math.PI * 2);
                 ctx.strokeStyle = bubble.color;
-                ctx.lineWidth = 3 * (1 - bubble.popTimer/10);
+                ctx.globalAlpha = 1 - bubble.popTimer/10;
+                ctx.lineWidth = 1;
                 ctx.stroke();
             } else {
+                ctx.save();
+                const grad = ctx.createRadialGradient(bubble.x, bubble.y, 0, bubble.x, bubble.y, bubble.radius);
+                grad.addColorStop(0, bubble.color);
+                grad.addColorStop(0.8, bubble.color);
+                grad.addColorStop(1, 'rgba(255,255,255,0)');
+                
+                ctx.globalAlpha = 0.7;
+                ctx.fillStyle = grad;
                 ctx.beginPath();
                 ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
-                const gradient = ctx.createRadialGradient(
-                    bubble.x - bubble.radius / 3, 
-                    bubble.y - bubble.radius / 3, 
-                    bubble.radius / 10,
-                    bubble.x, 
-                    bubble.y, 
-                    bubble.radius
-                );
-                gradient.addColorStop(0, 'white');
-                gradient.addColorStop(0.2, bubble.color);
-                gradient.addColorStop(1, 'rgba(0,0,0,0)');
-                ctx.fillStyle = gradient;
                 ctx.fill();
-                
-                ctx.beginPath();
-                ctx.arc(bubble.x - bubble.radius/3, bubble.y - bubble.radius/3, bubble.radius/4, 0, Math.PI*2);
-                ctx.fillStyle = 'rgba(255,255,255,0.4)';
-                ctx.fill();
+                ctx.restore();
             }
         });
     }
