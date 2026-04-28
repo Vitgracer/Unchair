@@ -42,5 +42,5 @@ export async function runCountdown(element) {
 }
 
 export function updateScore(element, score) {
-    element.textContent = score;
+    element.textContent = score.toString().padStart(4, '0');
 }

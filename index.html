@@ -8,14 +8,13 @@
 
     <!-- SEO & Social Meta Tags -->
     <meta name="description"
-        content="Stop sitting all day! Unchairted uses your webcam to help you move. It's private and works in your browser.">
-    <meta property="og:title" content="Unchairted: Get Up and Move!">
+        content="Stop sitting all day! Unchairted uses your webcam to help you move through interactive games. It's private and works locally in your browser.">
+    <meta property="og:title" content="Unchairted: The Future of Desk Breaks">
     <meta property="og:description" content="Your camera + Your body = A better break. No data saved, just moves ⚡">
     <meta property="og:image" content="./assets/logo.png">
     <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
 
-    <!-- Favicon (Emoji based) -->
+    <!-- Favicon -->
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪑</text></svg>">
 
@@ -24,38 +23,74 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=Syncopate:wght@400;700&display=swap"
+        rel="stylesheet">
+
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
+    <!-- Background Layer -->
+    <div id="hero-bg"></div>
+    <div id="overlay-glow"></div>
 
-    <div id="menu-container">
-        <h1>Select Game</h1>
-        <div id="game-selection">
-            <button id="start-btn" class="mode-btn" data-mode="BUBBLE">
-                <span class="mode-icon">🧼</span>
-                Bubble Hunter
-            </button>
-            <button id="egg-btn" class="mode-btn" data-mode="EGG">
-                <span class="mode-icon">🥚</span>
-                Egg Catcher
-            </button>
+    <main id="main-ui">
+        <header id="app-header">
+            <h1 class="logo-text">UN<span class="accent-red">CHAIR</span>TED</h1>
+            <p class="tagline">STAND UP. MOVE FAST. SCORE HIGH.</p>
+        </header>
+
+        <div id="menu-container">
+            <div id="game-selection">
+                <!-- Bubble Hunter Card -->
+                <div class="game-card" id="card-bubble">
+                    <div class="card-content">
+                        <div class="game-icon">🧼</div>
+                        <h2>Bubble Hunter</h2>
+                        <ul class="game-rules">
+                            <li><span class="dot"></span> Pop bubbles with your hands</li>
+                            <li><span class="dot"></span> Move your whole body for reach</li>
+                            <li><span class="dot"></span> Speed increases with score</li>
+                        </ul>
+                        <button id="start-btn" class="mode-btn action-btn" data-mode="BUBBLE">PLAY</button>
+                    </div>
+                </div>
+
+                <!-- Egg Catcher Card -->
+                <div class="game-card" id="card-egg">
+                    <div class="card-content">
+                        <div class="game-icon">🥚</div>
+                        <h2>Egg Catcher</h2>
+                        <ul class="game-rules">
+                            <li><span class="dot"></span> Control the basket with hands</li>
+                            <li><span class="dot"></span> Catch eggs from the perches</li>
+                            <li><span class="dot"></span> Don't let them hit the floor</li>
+                        </ul>
+                        <button id="egg-btn" class="mode-btn action-btn" data-mode="EGG">PLAY</button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </main>
 
     <div id="fps-overlay">
-        Render FPS: <span id="render-fps" class="fps-val">0</span><br>
-        Pose FPS: <span id="pose-fps" class="fps-val">0</span>
+        <span>FPS: <span id="render-fps" class="fps-val">0</span></span>
+        <span class="divider">/</span>
+        <span>POSE: <span id="pose-fps" class="fps-val">0</span></span>
     </div>
 
-    <div id="status">Waiting for a launch...</div>
+    <div id="status">System Standby</div>
 
     <div id="countdown" class="hidden"></div>
+
     <div id="score-container" class="hidden">
-        Score: <span id="score-val">0</span>
+        <span class="score-label">SCORE</span>
+        <span id="score-val">0000</span>
     </div>
 
     <footer>
@@ -82,7 +117,7 @@
         </div>
     </footer>
 
-    <div id="video-container">
+    <div id="video-container" class="hidden">
         <video id="input-video" playsinline></video>
         <canvas id="output-canvas"></canvas>
     </div>

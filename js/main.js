@@ -18,6 +18,8 @@ const poseFpsEl = document.getElementById('pose-fps');
 const countdownEl = document.getElementById('countdown');
 const scoreContainerEl = document.getElementById('score-container');
 const scoreValEl = document.getElementById('score-val');
+const mainUiEl = document.getElementById('main-ui');
+const videoContainerEl = document.getElementById('video-container');
 
 const game = new GameplayManager();
 let pose;
@@ -135,7 +137,7 @@ function renderLoop(now) {
     requestAnimationFrame(renderLoop);
 }
 
-// FPS tracking vars (moved up)
+// FPS tracking vars
 let renderFrameCount = 0;
 let lastRenderFpsUpdate = 0;
 let lastPoseTime = 0;
@@ -145,8 +147,11 @@ let lastFrameTime = 0;
 
 async function start(mode) {
     selectedMode = mode;
-    hideElement(menuContainer);
-    setStatus(statusEl, 'Camera initialization...');
+    hideElement(mainUiEl);
+    showElement(videoContainerEl, 'flex');
+    videoContainerEl.style.opacity = '1';
+    
+    setStatus(statusEl, 'SYSTEM INITIALIZING...');
 
     try {
         if (!pose) {
@@ -155,12 +160,12 @@ async function start(mode) {
             window.addEventListener('resize', updateSize);
             updateSize();
 
-            setStatus(statusEl, 'Model is loading..');
+            setStatus(statusEl, 'CALIBRATING POSE MODEL...');
             pose = await initPose(onPoseResults);
         }
 
         isStarted = true;
-        setStatus(statusEl, 'Preparation...');
+        setStatus(statusEl, 'GET READY');
 
         await runCountdown(countdownEl);
         
@@ -172,10 +177,13 @@ async function start(mode) {
     } catch (err) {
         console.error('Camera Error:', err);
         let errorMsg = err.message;
-        setStatus(statusEl, `<span style="color: #ff4444; font-weight: bold;">Error: ${err.name}</span><br><small style="color: #fff;">${errorMsg}</small>`, true);
-        menuContainer.style.display = 'block';
+        setStatus(statusEl, `<span style="color: #ff0000; font-weight: bold;">CRITICAL ERROR: ${err.name}</span><br><small style="color: #fff;">${errorMsg}</small>`, true);
+        showElement(mainUiEl);
+        videoContainerEl.style.opacity = '0';
+        hideElement(videoContainerEl);
     }
 }
+
 
 startBtn.addEventListener('click', () => start(GameMode.BUBBLE));
 eggBtn.addEventListener('click', () => start(GameMode.EGG));
