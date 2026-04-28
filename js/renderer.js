@@ -18,7 +18,7 @@ function getCenterOfMass(landmarks, indices) {
     return { x: x / count, y: y / count, z: z / count };
 }
 
-function drawLine(ctx, p1, p2, color = '#00FF00', width = 4) {
+function drawLine(ctx, p1, p2, color = '#ff0000', width = 4) {
     if (!p1 || !p2) return;
     ctx.beginPath();
     ctx.moveTo(p1.x, p1.y);
@@ -40,7 +40,7 @@ function drawPoint(ctx, p, color = '#FF0000', radius = 6) {
 /**
  * Draws a futuristic play area border
  */
-function drawPlayArea(ctx, x, y, size, color = '#00f2ff') {
+function drawPlayArea(ctx, x, y, size, color = '#ff0000') {
     ctx.save();
     
     // Subtle outer glow
@@ -82,8 +82,8 @@ function drawPlayArea(ctx, x, y, size, color = '#00f2ff') {
     ctx.lineTo(x, y + size - cornerLen);
     ctx.stroke();
 
-    // Semi-transparent fill for the non-playable area
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    // Semi-transparent fill for the non-playable area (Dark Pastel Red/Black)
+    ctx.fillStyle = 'rgba(20, 0, 0, 0.6)';
     // Top
     ctx.fillRect(0, 0, ctx.canvas.width, y); 
     // Bottom
@@ -96,7 +96,7 @@ function drawPlayArea(ctx, x, y, size, color = '#00f2ff') {
     // Pulse effect for the play area label
     const pulse = (Math.sin(Date.now() / 500) + 1) / 2;
     ctx.font = 'bold 14px Outfit, sans-serif';
-    ctx.fillStyle = `rgba(0, 242, 255, ${0.3 + pulse * 0.7})`;
+    ctx.fillStyle = `rgba(255, 0, 0, ${0.4 + pulse * 0.6})`;
     ctx.textAlign = 'center';
     
     // Un-mirror text (counteracting CSS flip)
@@ -142,8 +142,8 @@ function drawPerches(ctx, perches, basket = null) {
         // Target glow
         if (isNear) {
             ctx.shadowBlur = 15;
-            ctx.shadowColor = '#00f2ff';
-            ctx.strokeStyle = 'rgba(0, 242, 255, 0.8)';
+            ctx.shadowColor = '#ff0000';
+            ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
             ctx.lineWidth = 3;
         } else {
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
@@ -401,7 +401,7 @@ export function drawPose(ctx, results, video, canvas, gameplayManager = null) {
         const rAnkle = mapLM(lms[28]);
 
         ctx.shadowBlur = 10;
-        ctx.shadowColor = '#00FF00';
+        ctx.shadowColor = '#ff0000';
         drawLine(ctx, lShoulder, rShoulder);
         drawLine(ctx, lShoulder, lHip);
         drawLine(ctx, rShoulder, rHip);
@@ -415,10 +415,10 @@ export function drawPose(ctx, results, video, canvas, gameplayManager = null) {
         drawLine(ctx, rHip, rKnee);
         drawLine(ctx, rKnee, rAnkle);
 
-        ctx.shadowColor = '#FF0000';
-        drawPoint(ctx, head, '#00FF00', 10);
-        drawPoint(ctx, leftHand, '#FF0000', 8);
-        drawPoint(ctx, rightHand, '#FF0000', 8);
+        ctx.shadowColor = '#ff0000';
+        drawPoint(ctx, head, '#ff0000', 10);
+        drawPoint(ctx, leftHand, '#ffffff', 8);
+        drawPoint(ctx, rightHand, '#ffffff', 8);
         [lShoulder, rShoulder, lElbow, rElbow, lHip, rHip, lKnee, rKnee, lAnkle, rAnkle].forEach(p => {
             drawPoint(ctx, p, '#FFFFFF', 4);
         });
