@@ -149,6 +149,10 @@ let lastFrameTime = 0;
 async function start(mode) {
     selectedMode = mode;
     hideElement(mainUiEl);
+    hideElement(document.getElementById('hero-bg'));
+    hideElement(document.getElementById('overlay-glow'));
+    if (document.getElementById('smoke-layer')) hideElement(document.getElementById('smoke-layer'));
+    
     showElement(videoContainerEl, 'flex');
     showElement(fpsOverlayEl);
     videoContainerEl.style.opacity = '1';
@@ -181,6 +185,10 @@ async function start(mode) {
         let errorMsg = err.message;
         setStatus(statusEl, `<span style="color: #ff0000; font-weight: bold;">CRITICAL ERROR: ${err.name}</span><br><small style="color: #fff;">${errorMsg}</small>`, true);
         showElement(mainUiEl);
+        showElement(document.getElementById('hero-bg'));
+        showElement(document.getElementById('overlay-glow'));
+        if (document.getElementById('smoke-layer')) showElement(document.getElementById('smoke-layer'));
+
         videoContainerEl.style.opacity = '0';
         hideElement(videoContainerEl);
     }
