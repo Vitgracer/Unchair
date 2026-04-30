@@ -690,9 +690,15 @@ footer a:hover {
     margin-bottom: 10px;
 }
 
-#final-score-val {
-    font-size: 4rem;
-    font-weight: 900;
-    color: var(--primary-red);
-    text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+/* Critical Timer Pulse */
+.timer-critical {
+    color: var(--primary-red) !important;
+    border-color: var(--primary-red) !important;
+    animation: timer-pulse 0.5s ease-in-out infinite alternate;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
+}
+
+@keyframes timer-pulse {
+    from { transform: translateX(-50%) scale(1); }
+    to { transform: translateX(-50%) scale(1.1); }
 }

@@ -242,6 +242,7 @@ backToMenuBtn.addEventListener('click', () => {
     hideElement(videoContainerEl);
     hideElement(scoreContainerEl);
     hideElement(gameTimerEl);
+    gameTimerEl.classList.remove('timer-critical');
     showElement(mainUiEl);
     showElement(document.getElementById('hero-bg'));
     showElement(document.getElementById('overlay-glow'));

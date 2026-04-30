@@ -48,8 +48,16 @@ export function updateScore(element, score) {
 export function updateTimer(element, remainingTime) {
     if (remainingTime === Infinity) {
         element.textContent = "∞";
+        element.classList.remove('timer-critical');
         return;
     }
+    
+    if (remainingTime <= 10 && remainingTime > 0) {
+        element.classList.add('timer-critical');
+    } else {
+        element.classList.remove('timer-critical');
+    }
+
     const mins = Math.floor(remainingTime / 60);
     const secs = Math.floor(remainingTime % 60);
     element.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
