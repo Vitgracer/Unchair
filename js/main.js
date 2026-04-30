@@ -170,6 +170,11 @@ async function start(mode) {
     
     setStatus(statusEl, 'SYSTEM INITIALIZING...');
 
+    // Clear old data to prevent "ghost" poses from previous games
+    currentPoseResults = null;
+    handPoints = [];
+    headPoint = null;
+
     try {
         if (!pose) {
             await initCamera(video);
@@ -184,12 +189,20 @@ async function start(mode) {
         isStarted = true;
         setStatus(statusEl, 'GET READY');
 
+        game.reset(); // Clear everything before countdown starts
+
         await runCountdown(countdownEl);
         
         hideElement(statusEl);
         showElement(scoreContainerEl);
-        if (selectedDuration > 0) showElement(gameTimerEl);
-        else hideElement(gameTimerEl);
+        updateScore(scoreValEl, 0);
+        
+        if (selectedDuration > 0) {
+            showElement(gameTimerEl);
+            updateTimer(gameTimerEl, selectedDuration);
+        } else {
+            hideElement(gameTimerEl);
+        }
         
         game.start(selectedMode, selectedDuration);
         gameOverShown = false;

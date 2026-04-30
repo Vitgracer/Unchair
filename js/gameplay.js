@@ -195,11 +195,7 @@ export class GameplayManager {
         this.effects.push(new ScoreEffect(text, type, x, y));
     }
 
-    start(mode = GameMode.BUBBLE, duration = 60) {
-        this.mode = mode;
-        this.duration = duration;
-        this.remainingTime = duration === 0 ? Infinity : duration;
-        this.gameStarted = true;
+    reset() {
         this.bubbles = [];
         this.eggs = [];
         this.basket = null;
@@ -208,6 +204,17 @@ export class GameplayManager {
         this.lastLaserTime = performance.now();
         this.isPenaltyActive = false;
         this.effects = [];
+        this.gameStarted = false;
+        this.remainingTime = this.duration;
+    }
+
+    start(mode = GameMode.BUBBLE, duration = 60) {
+        this.mode = mode;
+        this.duration = duration;
+        this.remainingTime = duration === 0 ? Infinity : duration;
+        this.gameStarted = true;
+        this.reset();
+        this.gameStarted = true; // reset() sets it to false, need to set it back if we call it from start
         
         if (this.mode === GameMode.EGG) {
             this.spawnInterval = 2500; // Slower start
