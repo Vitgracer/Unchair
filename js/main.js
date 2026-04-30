@@ -139,7 +139,7 @@ function renderLoop(now) {
         } else if (isStarted && !game.gameStarted && !gameOverShown && game.remainingTime === 0) {
             // Game just ended
             gameOverShown = true;
-            showGameOver(gameOverEl, finalScoreEl, game.getScore());
+            showGameOver(gameOverEl, finalScoreEl, game.getScore(), game.stats, game.mode);
         }
 
         drawPose(ctx, currentPoseResults || {}, video, canvas, game);

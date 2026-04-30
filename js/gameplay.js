@@ -206,6 +206,16 @@ export class GameplayManager {
         this.effects = [];
         this.gameStarted = false;
         this.remainingTime = this.duration;
+
+        // Statistics
+        this.stats = {
+            popped: 0,
+            missed: 0,
+            eggsCaught: 0,
+            eggsBroken: 0,
+            lasersAvoided: 0,
+            lasersHit: 0
+        };
     }
 
     start(mode = GameMode.BUBBLE, duration = 60) {
@@ -285,15 +295,16 @@ export class GameplayManager {
         if (now - this.lastSpawnTime > currentSpawnInterval) {
             if (this.mode === GameMode.BUBBLE) {
                 const b = new Bubble(this.playArea.minX, this.playArea.maxX, this.playArea.minY);
-                if (this.difficultyPhase === 1) b.speed *= 1.3;
-                if (this.difficultyPhase === 2) b.speed *= 1.6;
+                if (this.difficultyPhase === 1) b.speed *= 1.4;
+                if (this.difficultyPhase === 2) b.speed *= 1.8;
                 this.bubbles.push(b);
                 this.lastSpawnTime = now;
             } else {
                 // EGG Mode: Smarter spawning to avoid simultaneous falls
                 const newEgg = new Egg(this.playArea);
-                if (this.difficultyPhase === 1) newEgg.rollSpeed *= 1.25;
-                if (this.difficultyPhase === 2) newEgg.rollSpeed *= 1.5;
+                // Aggressive scaling for Eggs
+                if (this.difficultyPhase === 1) newEgg.rollSpeed *= 1.6;
+                if (this.difficultyPhase === 2) newEgg.rollSpeed *= 2.2;
 
                 const arrivalFor = (egg) => ((1 - egg.progress) / egg.rollSpeed) * 1000;
                 const myArrival = arrivalFor(newEgg);
@@ -321,6 +332,7 @@ export class GameplayManager {
                 handPoints.forEach(point => {
                     if (bubble.checkCollision(point, 40)) {
                         this.score += 10;
+                        this.stats.popped++;
                         this.addEffect('+10', 'pos');
                     }
                 });
@@ -331,6 +343,7 @@ export class GameplayManager {
             this.bubbles.forEach(b => {
                 if (!b.isPopped && !b.isMissed && b.y > maxY) {
                     this.score = Math.max(0, this.score - 10);
+                    this.stats.missed++;
                     this.addEffect('-10', 'neg');
                     b.isMissed = true;
                 }
@@ -343,10 +356,12 @@ export class GameplayManager {
                 egg.update(dt);
                 if (!wasBreaking && egg.isBreaking) {
                     this.score = Math.max(0, this.score - 10);
+                    this.stats.eggsBroken++;
                     this.addEffect('-10', 'neg');
                 }
                 if (this.basket && egg.checkCollision(this.basket)) {
                     this.score += 10;
+                    this.stats.eggsCaught++;
                     this.addEffect('+10', 'pos');
                 }
             });
@@ -373,12 +388,16 @@ export class GameplayManager {
                 if (headPoint && this.laser.checkCollision(headPoint)) {
                     if (!this.isPenaltyActive) {
                         this.score = Math.max(0, this.score - 50);
+                        this.stats.lasersHit++;
                         this.addEffect('-50', 'penalty');
                     }
                     this.isPenaltyActive = true;
                     this.penaltyTimer = 0.3;
                 }
-                if (!this.laser.active) this.laser = null;
+                if (!this.laser.active) {
+                    if (!this.isPenaltyActive) this.stats.lasersAvoided++;
+                    this.laser = null;
+                }
             }
         } else {
             // Ensure no laser persists if mode switched (though start() resets it)

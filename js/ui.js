@@ -63,7 +63,44 @@ export function updateTimer(element, remainingTime) {
     element.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
-export function showGameOver(overlay, scoreVal, finalScore) {
-    scoreVal.textContent = finalScore.toString().padStart(4, '0');
+export function showGameOver(overlay, scoreValEl, finalScore, stats, mode) {
+    scoreValEl.textContent = finalScore.toString().padStart(4, '0');
+    
+    const statsContainer = document.getElementById('game-stats');
+    let html = '';
+
+    if (mode === 'BUBBLE') {
+        html = `
+            <div class="stat-row">
+                <span class="stat-label">Bubbles Popped</span>
+                <span class="stat-value pos">${stats.popped}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Bubbles Missed</span>
+                <span class="stat-value neg">${stats.missed}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Lasers Avoided</span>
+                <span class="stat-value pos">${stats.lasersAvoided}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Lasers Hit</span>
+                <span class="stat-value neg">${stats.lasersHit}</span>
+            </div>
+        `;
+    } else {
+        html = `
+            <div class="stat-row">
+                <span class="stat-label">Eggs Caught</span>
+                <span class="stat-value pos">${stats.eggsCaught}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Eggs Broken</span>
+                <span class="stat-value neg">${stats.eggsBroken}</span>
+            </div>
+        `;
+    }
+
+    statsContainer.innerHTML = html;
     overlay.classList.remove('hidden');
 }
